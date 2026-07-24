@@ -76,6 +76,15 @@ describe("调度台", () => {
     expect(wrapper.get('[data-testid="dispatch-tabs"]').text()).toContain("执行监控");
   });
 
+  it("告警事件提供事件工单和报表闭环", async () => {
+    const wrapper = mount(App);
+    await wrapper.get('[data-task="events"]').trigger("click");
+    await wrapper.get('[data-event-tab="work-orders"]').trigger("click");
+    expect(wrapper.text()).toContain("WO-20260724-018");
+    await wrapper.get('[data-event-tab="reports"]').trigger("click");
+    expect(wrapper.text()).toContain("水量平衡日报");
+  });
+
   it("提供页面级运行范围、刷新入口和三种空间视图", async () => {
     const wrapper = mount(App);
     await new Promise((resolve) => setTimeout(resolve, 0));

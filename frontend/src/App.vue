@@ -4,6 +4,7 @@ import AnalysisCenter from "./components/AnalysisCenter.vue";
 import AlarmList from "./components/AlarmList.vue"; import ConfirmDialog from "./components/ConfirmDialog.vue";
 import DashboardToolbar from "./components/DashboardToolbar.vue";
 import DispatchCenter from "./components/DispatchCenter.vue";
+import EventCenter from "./components/EventCenter.vue";
 import MetricStrip from "./components/MetricStrip.vue"; import PlantHeader from "./components/PlantHeader.vue";
 import PumpDispatch from "./components/PumpDispatch.vue"; import RedMudPoolPanel from "./components/RedMudPoolPanel.vue";
 import TopNavigation from "./components/TopNavigation.vue"; import TrendPanel from "./components/TrendPanel.vue"; import WaterNetworkMap from "./components/WaterNetworkMap.vue";
@@ -36,6 +37,7 @@ async function confirmDispatch(){if(!pending.value)return;try{await store.submit
         :busy="store.dispatching"
         @dispatch="requestDispatch"
       />
+      <EventCenter v-else-if="activeTask==='events'" :alarms="store.alarms" @acknowledge="store.acknowledgeAlarm" />
       <div v-else-if="store.loading" class="loading-state"><span></span>正在连接实时数据</div>
       <div v-else-if="store.error&&!store.overview" class="loading-state danger">{{ store.error }} <button @click="store.loadDashboard">重试</button></div>
       <template v-else-if="store.overview">
