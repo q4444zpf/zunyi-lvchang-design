@@ -59,6 +59,16 @@ describe("调度台", () => {
     expect(wrapper.get('[data-task="analysis"]').attributes("aria-current")).toBe("page");
   });
 
+  it("运行分析提供用水压力漏损和DMA四个任务视图", async () => {
+    const wrapper = mount(App);
+    await wrapper.get('[data-task="analysis"]').trigger("click");
+    expect(wrapper.get('[role="tablist"]').text()).toContain("用水分析");
+    expect(wrapper.get('[role="tablist"]').text()).toContain("压力分析");
+    expect(wrapper.get('[role="tablist"]').text()).toContain("漏损分析");
+    await wrapper.get('[data-analysis-tab="dma"]').trigger("click");
+    expect(wrapper.text()).toContain("DMA-03 赤泥洗涤区");
+  });
+
   it("提供页面级运行范围、刷新入口和三种空间视图", async () => {
     const wrapper = mount(App);
     await new Promise((resolve) => setTimeout(resolve, 0));
