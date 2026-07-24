@@ -69,6 +69,13 @@ describe("调度台", () => {
     expect(wrapper.text()).toContain("DMA-03 赤泥洗涤区");
   });
 
+  it("智能调度提供方案任务和执行监控", async () => {
+    const wrapper = mount(App);
+    await wrapper.get('[data-task="dispatch"]').trigger("click");
+    expect(wrapper.text()).toContain("稳妥平衡方案");
+    expect(wrapper.get('[data-testid="dispatch-tabs"]').text()).toContain("执行监控");
+  });
+
   it("提供页面级运行范围、刷新入口和三种空间视图", async () => {
     const wrapper = mount(App);
     await new Promise((resolve) => setTimeout(resolve, 0));
