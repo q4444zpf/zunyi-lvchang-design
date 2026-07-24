@@ -52,6 +52,13 @@ describe("调度台", () => {
     ]);
   });
 
+  it("点击运行分析后切换到分析中心并保持当前导航状态", async () => {
+    const wrapper = mount(App);
+    await wrapper.get('[data-task="analysis"]').trigger("click");
+    expect(wrapper.get('[data-testid="analysis-center"]').exists()).toBe(true);
+    expect(wrapper.get('[data-task="analysis"]').attributes("aria-current")).toBe("page");
+  });
+
   it("提供页面级运行范围、刷新入口和三种空间视图", async () => {
     const wrapper = mount(App);
     await new Promise((resolve) => setTimeout(resolve, 0));

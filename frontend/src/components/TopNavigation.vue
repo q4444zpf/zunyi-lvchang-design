@@ -1,15 +1,16 @@
 <script setup lang="ts">
-import { ref } from "vue";
+export type PlatformTask = "overview" | "network" | "analysis" | "dispatch" | "events";
 
 const items = [
-  { label: "监控总览", href: "#overview" },
-  { label: "水网监控", href: "#network" },
-  { label: "运行分析", href: "#analysis" },
-  { label: "智能调度", href: "#pools" },
-  { label: "告警事件", href: "#alarms" }
+  { task: "overview", label: "监控总览", href: "#overview" },
+  { task: "network", label: "水网监控", href: "#network" },
+  { task: "analysis", label: "运行分析", href: "#analysis" },
+  { task: "dispatch", label: "智能调度", href: "#pools" },
+  { task: "events", label: "告警事件", href: "#alarms" }
 ] as const;
 
-const activeHref = ref("#overview");
+defineProps<{ activeTask: PlatformTask }>();
+const emit = defineEmits<{ navigate: [task: PlatformTask] }>();
 </script>
 
 <template>
@@ -18,9 +19,10 @@ const activeHref = ref("#overview");
       v-for="item in items"
       :key="item.href"
       :href="item.href"
-      :class="{ active: activeHref === item.href }"
-      :aria-current="activeHref === item.href ? 'page' : undefined"
-      @click="activeHref = item.href"
+      :data-task="item.task"
+      :class="{ active: activeTask === item.task }"
+      :aria-current="activeTask === item.task ? 'page' : undefined"
+      @click.prevent="emit('navigate', item.task)"
     >
       {{ item.label }}
     </a>
