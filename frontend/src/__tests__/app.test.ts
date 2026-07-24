@@ -52,6 +52,54 @@ describe("调度台", () => {
     ]);
   });
 
+  it("提供页面级运行范围、刷新入口和三种空间视图", async () => {
+    const wrapper = mount(App);
+    await new Promise((resolve) => setTimeout(resolve, 0));
+    await wrapper.vm.$nextTick();
+
+    const toolbar = wrapper.get('[data-testid="dashboard-toolbar"]');
+    expect(toolbar.text()).toContain("监控中心");
+    expect(toolbar.text()).toContain("全厂范围");
+    expect(toolbar.text()).toContain("实时数据");
+    expect(toolbar.get("button").text()).toContain("刷新数据");
+
+    const viewSwitcher = wrapper.get('[data-testid="view-switcher"]');
+    expect(viewSwitcher.findAll("button").map((item) => item.text())).toEqual([
+      "概化图",
+      "GIS 图",
+      "三维图"
+    ]);
+    expect(viewSwitcher.find('[aria-pressed="true"]').text()).toBe("概化图");
+  });
+
+  it("切换空间视图时保留当前页面并更新选中状态", async () => {
+    const wrapper = mount(App);
+    await new Promise((resolve) => setTimeout(resolve, 0));
+    await wrapper.vm.$nextTick();
+
+    const gisButton = wrapper
+      .get('[data-testid="view-switcher"]')
+      .findAll("button")
+      .find((item) => item.text() === "GIS 图");
+    if (!gisButton) throw new Error("GIS 图入口不存在");
+    await gisButton.trigger("click");
+    expect(gisButton.attributes("aria-pressed")).toBe("true");
+    expect(wrapper.text()).toContain("GIS 管网态势");
+  });
+
+  it("趋势图监听容器尺寸变化以避免响应式布局溢出", async () => {
+    const observe = vi.fn();
+    vi.stubGlobal("ResizeObserver", class {
+      observe = observe;
+      disconnect = vi.fn();
+    });
+    const wrapper = mount(App);
+    await new Promise((resolve) => setTimeout(resolve, 0));
+    await wrapper.vm.$nextTick();
+    expect(observe).toHaveBeenCalled();
+    vi.unstubAllGlobals();
+  });
+
   it("加载后显示关键指标和工艺节点", async () => {
     const wrapper = mount(App);
     await new Promise((resolve) => setTimeout(resolve, 0));

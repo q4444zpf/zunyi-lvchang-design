@@ -3,7 +3,7 @@ import * as echarts from "echarts";
 import { nextTick, onBeforeUnmount, onMounted, ref, watch } from "vue";
 import type { Trends } from "../types";
 const props = defineProps<{ trends: Trends | null }>();
-const mode = ref<"total"|"zones">("total"); const host = ref<HTMLDivElement>(); let chart: echarts.ECharts | undefined;
+const mode = ref<"total"|"zones">("total"); const host = ref<HTMLDivElement>(); let chart: echarts.ECharts | undefined; let resizeObserver: ResizeObserver | undefined;
 function render() {
   if (!host.value || !props.trends) return;
   chart ||= echarts.init(host.value, undefined, { renderer: "svg" });
@@ -16,7 +16,15 @@ function render() {
       {name:"计划线",type:"line",data:total.map(p=>p.plan),lineStyle:{color:"#F0B84A",type:"dashed"},itemStyle:{color:"#F0B84A"},symbol:"none"}
     ] : Object.entries(props.trends.zones).map(([name,data])=>({name,type:"line",data,symbol:"none"})) });
 }
-onMounted(()=>nextTick(render)); watch([()=>props.trends,mode],()=>nextTick(render),{deep:true}); onBeforeUnmount(()=>chart?.dispose());
+onMounted(()=>nextTick(()=>{
+  render();
+  if (host.value && typeof ResizeObserver !== "undefined") {
+    resizeObserver = new ResizeObserver(()=>chart?.resize());
+    resizeObserver.observe(host.value);
+  }
+}));
+watch([()=>props.trends,mode],()=>nextTick(render),{deep:true});
+onBeforeUnmount(()=>{resizeObserver?.disconnect();chart?.dispose()});
 </script>
 <template>
   <section class="panel trend-panel">

@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { onMounted, ref } from "vue";
 import AlarmList from "./components/AlarmList.vue"; import ConfirmDialog from "./components/ConfirmDialog.vue";
+import DashboardToolbar from "./components/DashboardToolbar.vue";
 import MetricStrip from "./components/MetricStrip.vue"; import PlantHeader from "./components/PlantHeader.vue";
 import PumpDispatch from "./components/PumpDispatch.vue"; import RedMudPoolPanel from "./components/RedMudPoolPanel.vue";
 import TopNavigation from "./components/TopNavigation.vue"; import TrendPanel from "./components/TrendPanel.vue"; import WaterNetworkMap from "./components/WaterNetworkMap.vue";
@@ -21,6 +22,7 @@ async function confirmDispatch(){if(!pending.value)return;try{await store.submit
     <main>
       <PlantHeader v-if="store.overview" :name="store.overview.plant_name" :data-time="store.overview.data_time" :communication="store.overview.communication" :operator="store.overview.operator"/>
       <header v-else class="plant-header"><div><span class="eyebrow">水资源调度中心</span><h1>遵义氧化铝厂</h1></div></header>
+      <DashboardToolbar :loading="store.loading" @refresh="store.loadDashboard"/>
       <div v-if="store.overview?.communication==='离线'" class="offline-banner" role="status">通信中断：当前显示最后数据，禁止下发控制命令</div>
       <div v-if="store.loading" class="loading-state"><span></span>正在连接实时数据</div>
       <div v-else-if="store.error&&!store.overview" class="loading-state danger">{{ store.error }} <button @click="store.loadDashboard">重试</button></div>
