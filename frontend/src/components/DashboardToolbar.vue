@@ -1,14 +1,14 @@
 <script setup lang="ts">
-defineProps<{ loading: boolean }>();
+defineProps<{ loading: boolean; contextTitle: string; pageTitle: string }>();
 defineEmits<{ refresh: [] }>();
 </script>
 
 <template>
-  <section class="dashboard-toolbar" data-testid="dashboard-toolbar" aria-label="监控范围与数据工具">
+  <section class="dashboard-toolbar" data-testid="dashboard-toolbar" :aria-label="`${pageTitle}范围与数据工具`">
     <div class="page-context">
-      <span>监控中心</span>
+      <span>{{ contextTitle }}</span>
       <i aria-hidden="true">/</i>
-      <strong>监控总览</strong>
+      <strong>{{ pageTitle }}</strong>
     </div>
     <div class="scope-controls">
       <span class="scope-chip"><small>监控范围</small><b>全厂范围</b></span>

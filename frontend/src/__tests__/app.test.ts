@@ -55,7 +55,7 @@ describe("调度台", () => {
   it("点击运行分析后切换到分析中心并保持当前导航状态", async () => {
     const wrapper = mount(App);
     await wrapper.get('[data-task="analysis"]').trigger("click");
-    expect(wrapper.get('[data-testid="analysis-center"]').exists()).toBe(true);
+    expect(wrapper.find('[data-testid="analysis-center"]').exists()).toBe(true);
     expect(wrapper.get('[data-task="analysis"]').attributes("aria-current")).toBe("page");
   });
 
@@ -74,6 +74,12 @@ describe("调度台", () => {
     await wrapper.get('[data-task="dispatch"]').trigger("click");
     expect(wrapper.text()).toContain("稳妥平衡方案");
     expect(wrapper.get('[data-testid="dispatch-tabs"]').text()).toContain("执行监控");
+    expect(wrapper.get('[data-testid="dashboard-toolbar"]').text()).toContain("调度中心");
+  });
+
+  it("提供跳转到主要内容的键盘入口", () => {
+    const wrapper = mount(App);
+    expect(wrapper.get(".skip-link").attributes("href")).toBe("#main-content");
   });
 
   it("告警事件提供事件工单和报表闭环", async () => {

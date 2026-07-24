@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, ref } from "vue";
+import { computed, onMounted, ref } from "vue";
 import AnalysisCenter from "./components/AnalysisCenter.vue";
 import AlarmList from "./components/AlarmList.vue"; import ConfirmDialog from "./components/ConfirmDialog.vue";
 import DashboardToolbar from "./components/DashboardToolbar.vue";
@@ -11,6 +11,13 @@ import TopNavigation from "./components/TopNavigation.vue"; import TrendPanel fr
 import type { PlatformTask } from "./components/TopNavigation.vue";
 import { usePlantStore } from "./stores/plant"; import type { DispatchRequest, Node } from "./types";
 const store=usePlantStore(); const pending=ref<DispatchRequest|null>(null); const dialogOpen=ref(false); const toast=ref(""); const activeTask=ref<PlatformTask>("overview");
+const taskContext=computed(()=>({
+  overview:{contextTitle:"监控中心",pageTitle:"监控总览"},
+  network:{contextTitle:"监控中心",pageTitle:"水网监控"},
+  analysis:{contextTitle:"分析中心",pageTitle:"运行分析"},
+  dispatch:{contextTitle:"调度中心",pageTitle:"智能调度"},
+  events:{contextTitle:"事件中心",pageTitle:"告警事件"}
+}[activeTask.value]));
 onMounted(()=>store.loadDashboard());
 function selectNode(node:Node){store.selectedNodeId=node.id}
 function requestDispatch(payload:DispatchRequest){pending.value=payload;dialogOpen.value=true}
@@ -18,15 +25,16 @@ async function confirmDispatch(){if(!pending.value)return;try{await store.submit
 </script>
 <template>
   <div class="app-shell">
+    <a class="skip-link" href="#main-content">跳到主要内容</a>
     <div class="top-shell">
       <div class="brand"><span>ZY</span><b>水网智能管理平台</b></div>
       <TopNavigation :active-task="activeTask" @navigate="activeTask=$event" />
       <div class="shift"><span>当前班次</span><b>中班 · 14:00—22:00</b></div>
     </div>
-    <main>
+    <main id="main-content" tabindex="-1">
       <PlantHeader v-if="store.overview" :name="store.overview.plant_name" :data-time="store.overview.data_time" :communication="store.overview.communication" :operator="store.overview.operator"/>
       <header v-else class="plant-header"><div><span class="eyebrow">水资源调度中心</span><h1>遵义氧化铝厂</h1></div></header>
-      <DashboardToolbar :loading="store.loading" @refresh="store.loadDashboard"/>
+      <DashboardToolbar :loading="store.loading" :context-title="taskContext.contextTitle" :page-title="taskContext.pageTitle" @refresh="store.loadDashboard"/>
       <div v-if="store.overview?.communication==='离线'" class="offline-banner" role="status">通信中断：当前显示最后数据，禁止下发控制命令</div>
       <AnalysisCenter v-if="activeTask==='analysis'" />
       <DispatchCenter

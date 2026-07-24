@@ -22,7 +22,7 @@ const emit = defineEmits<{ navigate: [task: PlatformTask] }>();
       :data-task="item.task"
       :class="{ active: activeTask === item.task }"
       :aria-current="activeTask === item.task ? 'page' : undefined"
-      @click.prevent="emit('navigate', item.task)"
+      @click="emit('navigate', item.task)"
     >
       {{ item.label }}
     </a>
